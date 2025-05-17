@@ -1,29 +1,23 @@
-name: AWS GitHub Actions Pipeline
+name: SSH into EC2
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  build-deploy:
+  ssh-job:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup SSH key and known hosts
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-      
+    - name: Set up SSH key and known hosts
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: SSH into EC2 and run a command
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ Connected to EC2'; uname -a"
-
-      - name: SSH into EC2 and run a command
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ Connected to EC2'; uname -a"
+    - name: SSH into EC2 and run command
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ Connected from GitHub Actions'; uname -a"
