@@ -1,7 +1,9 @@
 name: SSH into EC2
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   ssh-job:
