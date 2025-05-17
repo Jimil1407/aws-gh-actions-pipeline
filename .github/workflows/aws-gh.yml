@@ -31,10 +31,8 @@ jobs:
         export PATH="$BUN_INSTALL/bin:$PATH"
         bun --version
 
-    - name: Install dependencies
-      run: |
-        bun install
-
     - name: Run index.ts
       run: |
+        export BUN_INSTALL="$HOME/.bun"
+        export PATH="$BUN_INSTALL/bin:$PATH"
         bun run index.ts
